@@ -1,0 +1,35 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+credentials/
+
+# Build outputs
+bin/
+dist/
+build/
+coverage/
+target/
+.dart_tool/
+.flutter-plugins*
+node_modules/
+vendor/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs and local state
+*.log
+*.pid
+tmp/
+temp/
+
+# Local data
+storage/*
+!storage/.gitkeep
