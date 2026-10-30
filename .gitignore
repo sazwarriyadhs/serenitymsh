@@ -33,3 +33,34 @@ temp/
 # Local data
 storage/*
 !storage/.gitkeep
+
+# Backups & tooling artifacts
+apps/**/backup-*/
+apps/**/_backup/
+.refact/
+
+# Go build artifacts
+*.exe
+*.test
+*.out
+
+# Env local variants
+.env.local
+.env.*.local
+
+# Local Archives & Audits
+_customer-mobile-archive/
+_customer-mobile-audit.txt
+
+# Tooling & Scratchpads
+.refact/
+*.tmp
+
+# Individual file backups
+*.backup-*
+*.backup
+*.bak
+
+# Extra backups & binaries
+*.bak-*
+*.zip

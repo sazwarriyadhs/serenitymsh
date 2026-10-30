@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply bg-cream-100 text-ink-900 font-sans antialiased; }
+  ::selection { @apply bg-gold-400 text-ink-900; }
+}
+@layer components {
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #D4AF37 0%, #F5E9C7 40%, #C9A961 70%, #B8860B 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-medium text-ink-900 transition-all duration-300;
+    background: linear-gradient(135deg, #D4AF37, #F5E9C7 50%, #C9A961);
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.25);
+  }
+  .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(212, 175, 55, 0.45); }
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full font-medium border border-gold-400/40 text-gold-200 transition-all duration-300;
+  }
+  .btn-outline:hover { @apply bg-gold-400/10 border-gold-400/80; transform: translateY(-2px); }
+  .glass-nav {
+    background: rgba(10, 14, 26, 0.65);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+  }
+  .arch-motif { background-image: radial-gradient(circle at 50% 100%, rgba(212,175,55,0.08) 0%, transparent 60%); }
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0A0E1A; }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #C9A961, #B8860B); border-radius: 4px; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
