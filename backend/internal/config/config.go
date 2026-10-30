@@ -1,36 +1,35 @@
 package config
 
 import (
-	"fmt"
-	"os"
-	"strconv"
+    "os"
 )
 
 type Config struct {
-	DatabaseURL string
-	APIPort     string
-	JWTSecret   string
+    DatabaseURL string
+    JWTSecret   string
+    Port        string
 }
 
-func Load() (Config, error) {
-	databaseURL := os.Getenv("DATABASE_URL")
-	if databaseURL == "" {
-		return Config{}, fmt.Errorf("DATABASE_URL is required")
-	}
+func Load() *Config {
+    dbURL := os.Getenv("DATABASE_URL")
+    if dbURL == "" {
+        // Fallback khusus untuk lokal (Windows)
+        dbURL = "postgres://serenity:Serenitydatabase2026@localhost:5434/serenity?sslmode=disable"
+    }
 
-	port := os.Getenv("API_PORT")
-	if port == "" {
-		port = "8080"
-	}
-	n, err := strconv.Atoi(port)
-	if err != nil || n < 1 || n > 65535 {
-		return Config{}, fmt.Errorf("API_PORT must be between 1 and 65535")
-	}
+    jwtSecret := os.Getenv("JWT_SECRET")
+    if jwtSecret == "" {
+        jwtSecret = "rahasia_lokal_123"
+    }
 
-	jwtSecret := os.Getenv("JWT_SECRET")
-	if len(jwtSecret) < 32 {
-		return Config{}, fmt.Errorf("JWT_SECRET is required and must be at least 32 characters")
-	}
+    port := os.Getenv("PORT")
+    if port == "" {
+        port = "8091"
+    }
 
-	return Config{DatabaseURL: databaseURL, APIPort: port, JWTSecret: jwtSecret}, nil
+    return &Config{
+        DatabaseURL: dbURL,
+        JWTSecret:   jwtSecret,
+        Port:        port,
+    }
 }
