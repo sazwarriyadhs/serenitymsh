@@ -1,20 +1,22 @@
 package main
 
 import (
+    "context"
     "fmt"
     "log"
     "net/http"
     "serenity-hms/backend/internal/config"
-    "serenity-hms/backend/internal/httpapi"
     "serenity-hms/backend/internal/database"
+    "serenity-hms/backend/internal/httpapi"
 )
 
 func main() {
     // 1. Load config
     cfg := config.Load()
 
-    // 2. Koneksi ke database
-    dbPool, err := database.Connect(cfg.DatabaseURL)
+    // 2. Koneksi ke database (menggunakan fungsi Open dan context.Background())
+    ctx := context.Background()
+    dbPool, err := database.Open(ctx, cfg.DatabaseURL)
     if err != nil {
         log.Fatalf("Gagal koneksi ke database: %v", err)
     }
