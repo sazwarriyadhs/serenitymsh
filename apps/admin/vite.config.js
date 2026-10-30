@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5174,
     strictPort: true,
     proxy: {
-      '/api': { target: 'http://localhost:8091', changeOrigin: true, secure: false }
+      '/api': { target: 'http://https://serenitymsh-production.up.railway.app', changeOrigin: true, secure: false }
     }
   }
 })

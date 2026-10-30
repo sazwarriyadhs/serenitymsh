@@ -1,4 +1,4 @@
-const API_URL = '/api' // Vite proxy akan meneruskan ini ke http://localhost:8091
+const API_URL = '/api' // Vite proxy akan meneruskan ini ke http://https://serenitymsh-production.up.railway.app
 
 export async function submitInquiry(data) {
   try {
