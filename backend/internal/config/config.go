@@ -3,6 +3,7 @@ package config
 import (
     "log"
     "os"
+    "strings"
 )
 
 type Config struct {
@@ -13,14 +14,18 @@ type Config struct {
 
 func Load() *Config {
     dbURL := os.Getenv("DATABASE_URL")
-    if dbURL == "" {
-        // Fallback khusus lokal
-        dbURL = "postgres://serenity:Serenitydatabase2026@localhost:5434/serenity?sslmode=disable"
-    }
-
-    // Jika di Railway dan URL masih localhost, matikan aplikasi dengan error jelas
-    if os.Getenv("RAILWAY_ENVIRONMENT") != "" && dbURL == "postgres://serenity:Serenitydatabase2026@localhost:5434/serenity?sslmode=disable" {
-        log.Fatal("CRITICAL: DATABASE_URL belum diatur di Railway Variables! Harap atur ke URL Supabase.")
+    
+    // Jika DATABASE_URL kosong ATAU berisi localhost, kita anggap error (kecuali di lokal)
+    if dbURL == "" || strings.Contains(dbURL, "localhost") || strings.Contains(dbURL, "127.0.0.1") {
+        // Cek apakah kita sedang berjalan di Railway (biasanya Railway punya env PORT yang bukan 8091)
+        if os.Getenv("PORT") != "" && os.Getenv("PORT") != "8091" {
+            log.Fatal("CRITICAL: DATABASE_URL tidak valid! Anda menjalankan di Cloud/Railway, tetapi DATABASE_URL mengarah ke localhost. Harap atur variabel DATABASE_URL ke URL Supabase.")
+        }
+        
+        // Fallback untuk lokal
+        if dbURL == "" {
+            dbURL = "postgres://serenity:Serenitydatabase2026@localhost:5434/serenity?sslmode=disable"
+        }
     }
 
     jwtSecret := os.Getenv("JWT_SECRET")
