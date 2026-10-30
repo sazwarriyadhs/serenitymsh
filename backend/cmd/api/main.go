@@ -1,72 +1,33 @@
 package main
 
 import (
-	"context"
-	"errors"
-	"fmt"
-	"log"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
-
-	"serenity-hms/backend/internal/config"
-	"serenity-hms/backend/internal/database"
-	"serenity-hms/backend/internal/httpapi"
+    "fmt"
+    "log"
+    "net/http"
+    "serenity-hms/backend/internal/config"
+    "serenity-hms/backend/internal/httpapi"
+    "serenity-hms/backend/internal/database"
 )
 
 func main() {
-	if err := run(); err != nil {
-		log.Fatal(err)
-	}
-}
+    // 1. Load config
+    cfg := config.Load()
 
-func run() error {
-	cfg, err := cfg := config.Load()
-	if err != nil {
-		return err
-	}
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
+    // 2. Koneksi ke database
+    dbPool, err := database.Connect(cfg.DatabaseURL)
+    if err != nil {
+        log.Fatalf("Gagal koneksi ke database: %v", err)
+    }
+    defer dbPool.Close()
 
-	pool, err := database.Open(ctx, cfg.DatabaseURL)
-	if err != nil {
-		return err
-	}
-	defer pool.Close()
+    // 3. Setup Router/API
+    handler := httpapi.New(dbPool, cfg.JWTSecret)
 
-	command := "serve"
-	if len(os.Args) > 1 {
-		command = os.Args[1]
-	}
-
-	switch command {
-	case "migrate":
-		return database.ApplyMigrations(ctx, pool)
-	case "serve":
-		server := &http.Server{
-			Addr:              ":" + cfg.Port,
-			Handler:           httpapi.New(pool, cfg.JWTSecret),
-			ReadHeaderTimeout: 5 * time.Second,
-		}
-		errCh := make(chan error, 1)
-		go func() {
-			log.Printf("Serenity API listening on :%s", cfg.Port)
-			errCh <- server.ListenAndServe()
-		}()
-		select {
-		case err := <-errCh:
-			if errors.Is(err, http.ErrServerClosed) {
-				return nil
-			}
-			return fmt.Errorf("HTTP server: %w", err)
-		case <-ctx.Done():
-			shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-			defer cancel()
-			return server.Shutdown(shutdownCtx)
-		}
-	default:
-		return fmt.Errorf("unknown command %q; use serve or migrate", command)
-	}
+    // 4. Jalankan Server
+    addr := fmt.Sprintf(":%s", cfg.Port)
+    log.Printf("Server berjalan di http://localhost%s", addr)
+    
+    if err := http.ListenAndServe(addr, handler); err != nil {
+        log.Fatalf("Server gagal berjalan: %v", err)
+    }
 }
