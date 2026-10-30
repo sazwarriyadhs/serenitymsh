@@ -23,7 +23,7 @@ func main() {
 }
 
 func run() error {
-	cfg, err := config.Load()
+	cfg, err := cfg := config.Load()
 	if err != nil {
 		return err
 	}
@@ -46,13 +46,13 @@ func run() error {
 		return database.ApplyMigrations(ctx, pool)
 	case "serve":
 		server := &http.Server{
-			Addr:              ":" + cfg.APIPort,
+			Addr:              ":" + cfg.Port,
 			Handler:           httpapi.New(pool, cfg.JWTSecret),
 			ReadHeaderTimeout: 5 * time.Second,
 		}
 		errCh := make(chan error, 1)
 		go func() {
-			log.Printf("Serenity API listening on :%s", cfg.APIPort)
+			log.Printf("Serenity API listening on :%s", cfg.Port)
 			errCh <- server.ListenAndServe()
 		}()
 		select {
